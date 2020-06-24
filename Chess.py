@@ -10,6 +10,17 @@ def draw_borders(win):
             if ((x % 2 == 0 and y % 2 == 1) or (x % 2 == 1 and y % 2 == 0)):
                 pygame.draw.rect(win, (0,0,0), (w * x, h * y, w, h))
 
+class Piece:
+    def __init__(self, x, y, width, height, piece):
+        self.x = x
+        self.y = y
+        self.width = width
+        self.height = height
+        self.rect = (x, y, width, height)
+        self.image = pygame.image.load(f"C:/Code/Python/Chess/Pieces/{piece}.png")
+    def draw(self, win):
+        win.blit(self.image, self.rect)
+
 def main():
     playing = True
     while playing:
