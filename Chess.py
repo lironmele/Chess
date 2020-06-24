@@ -18,8 +18,10 @@ class Piece:
         self.height = height
         self.rect = (x, y, width, height)
         self.image = pygame.image.load(f"C:/Code/Python/Chess/Pieces/{piece}.png")
+        self.Alive = True
     def draw(self, win):
         win.blit(self.image, self.rect)
+
 
 def main():
     playing = True
