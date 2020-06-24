@@ -4,10 +4,11 @@ pygame.init()
 win = pygame.display.set_mode((500, 500))
 
 def draw_borders(win):
-    w, h = pygame.display.Info().current_w, pygame.display.Info().current_h
-    for i in range(0, 9):
-        pygame.draw.line(win, (0,0,0), (w / 8 * i, 0), (w / 8 * i, h))
-        pygame.draw.line(win, (0,0,0), (0, h / 8 * i), (w, h / 8 * i))
+    w, h = pygame.display.Info().current_w / 8, pygame.display.Info().current_h / 8
+    for y in range(8):
+        for x in range(8):
+            if ((x % 2 == 0 and y % 2 == 1) or (x % 2 == 1 and y % 2 == 0)):
+                pygame.draw.rect(win, (0,0,0), (w * x, h * y, w, h))
 
 def main():
     playing = True
