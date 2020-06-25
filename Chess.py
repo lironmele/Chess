@@ -37,8 +37,7 @@ def mouse_selection(win, selection, pieces):
         if selection.x == mouse_pos[0] and selection.y == mouse_pos[1]:
             return None
         else:
-            pass
-            #selection.move(mouse_pos, pieces)
+            selection.move(mouse_pos, pieces, w, h)
     else:
         for piece in pieces:
             if (piece.x, piece.y) == mouse_pos:
@@ -57,21 +56,37 @@ class Piece:
         self.rect = (self.x, self.y, width, height)
         self.image = pygame.image.load(f"C:/Code/Python/Chess/Pieces/{piece}.png")
         self.alive = True
+        self.team = ""
 
     def draw(self, win):
         win.blit(self.image, self.rect)
     
-    def check_hit(self, pieces):
+    def register_hit(self, pieces):
         for piece in pieces:
-            if self is not piece and piece.alive and self.x == piece.x and self.y == piece.y:
-                piece.alive = False
+            if self is not piece and piece.alive and self.team != piece.team and self.x == piece.x and self.y == piece.y:
+                pieces.remove(piece)
                 return
+
+class King(Piece):
+    def __init__(self, cords, width, height, team):
+        super().__init__(cords, width, height, "King_" + team)
+        self.team = team
+    
+    def move(self, pos, pieces, w, h):
+        for piece in pieces:
+            if self is not piece and self.team == piece.team and pos[0] == piece.x and pos[1] == piece.y:
+                return
+        if abs(pos[0] - self.x) // w <= 1 and abs(pos[1] - self.y) // h <= 1:
+            self.x = pos[0]
+            self.y = pos[1]
+            self.rect = (self.x, self.y, self.width, self.height)
+            self.register_hit(pieces)
 
 def main():
     playing = True
     w, h = get_width_height()
     board = square_cords()
-    pieces = [Piece(board[0][0],w,h,"Rook_B"), Piece(board[1][0],w,h,"Knight_B")]
+    pieces = [King(board[0][0],w,h,"B"), King(board[1][0],w,h,"W")]
     selection = None
     while playing:
         for event in pygame.event.get():
@@ -84,8 +99,7 @@ def main():
         win.fill((255, 255, 255))
         draw_borders(win, w, h)
         for piece in pieces:
-            if piece.alive:
-                piece.draw(win)
+            piece.draw(win)
         draw_mouse(win, w, h)
         draw_selection(win, selection, w, h)
         pygame.display.flip()
