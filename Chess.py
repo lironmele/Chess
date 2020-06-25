@@ -18,7 +18,7 @@ def draw_borders(win, w, h):
                 light = True
         light = not light
 
-def square_cords():
+def square_pos():
     board = [[],[],[],[],[],[],[],[]]
     w, h = get_width_height()
     for col in range(8):
@@ -48,9 +48,9 @@ def draw_selection(win, selection, w, h):
         pygame.draw.rect(win, (0,255,0), ((selection.x // w) * w, (selection.y // h) * h, w, h), 5)
 
 class Piece:
-    def __init__(self, cords, width, height, piece):
-        self.x = cords["x"]
-        self.y = cords["y"]
+    def __init__(self, pos, width, height, piece):
+        self.x = pos["x"]
+        self.y = pos["y"]
         self.width = width
         self.height = height
         self.rect = (self.x, self.y, width, height)
@@ -60,6 +60,12 @@ class Piece:
 
     def draw(self, win):
         win.blit(self.image, self.rect)
+
+    def hit_team(self, pos, pieces):
+        for piece in pieces:
+            if self is not piece and self.team == piece.team and pos[0] == piece.x and pos[1] == piece.y:
+                return True
+        return False
     
     def register_hit(self, pieces):
         for piece in pieces:
@@ -67,26 +73,42 @@ class Piece:
                 pieces.remove(piece)
                 return
 
+    def update_pos(self, pos, pieces):
+        self.x = pos[0]
+        self.y = pos[1]
+        self.rect = (self.x, self.y, self.width, self.height)
+        self.register_hit(pieces)
+
+
 class King(Piece):
-    def __init__(self, cords, width, height, team):
-        super().__init__(cords, width, height, "King_" + team)
+    def __init__(self, pos, width, height, team):
+        super().__init__(pos, width, height, "King_" + team)
         self.team = team
     
     def move(self, pos, pieces, w, h):
-        for piece in pieces:
-            if self is not piece and self.team == piece.team and pos[0] == piece.x and pos[1] == piece.y:
-                return
-        if abs(pos[0] - self.x) // w <= 1 and abs(pos[1] - self.y) // h <= 1:
-            self.x = pos[0]
-            self.y = pos[1]
-            self.rect = (self.x, self.y, self.width, self.height)
-            self.register_hit(pieces)
+        if self.hit_team(pos, pieces):
+            return
+        dif_x, dif_y = abs(pos[0] - self.x) // w, abs(pos[1] - self.y) // h
+        if dif_x <= 1 and dif_y <= 1:
+            self.update_pos(pos, pieces)
+
+class Queen(Piece):
+    def __init__(self, pos, width, height, team):
+        super().__init__(pos, width, height, "Queen_" + team)
+        self.team = team
+
+    def move(self, pos, pieces, w, h):
+        if self.hit_team(pos, pieces):
+            return
+        dif_x, dif_y = abs(pos[0] - self.x) // w, abs(pos[1] - self.y) // h
+        if dif_x == dif_y or dif_x != 0 and dif_y == 0 or dif_x == 0 and dif_y != 0:
+            self.update_pos(pos, pieces)
 
 def main():
     playing = True
     w, h = get_width_height()
-    board = square_cords()
-    pieces = [King(board[4][0],w,h,"B"), King(board[4][7],w,h,"W")]
+    board = square_pos()
+    pieces = [King(board[4][0],w,h,"B"), King(board[4][7],w,h,"W"), Queen(board[3][0],w,h,"B"), Queen(board[3][7],w,h,"W")]
     selection = None
     while playing:
         for event in pygame.event.get():
@@ -95,7 +117,7 @@ def main():
             if event.type == pygame.MOUSEBUTTONUP:
                 selection = mouse_selection(win, selection, pieces)
         w, h = get_width_height()
-        board = square_cords()
+        board = square_pos()
         win.fill((255, 255, 255))
         draw_borders(win, w, h)
         for piece in pieces:
