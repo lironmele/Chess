@@ -61,6 +61,9 @@ class Piece:
     def draw(self, win):
         win.blit(self.image, self.rect)
 
+    def get_dif_pos(self, pos, w, h):
+        return abs(pos[0] - self.x) // w, abs(pos[1] - self.y) // h
+
     def hit_team(self, pos, pieces):
         for piece in pieces:
             if self is not piece and self.team == piece.team and pos[0] == piece.x and pos[1] == piece.y:
@@ -87,7 +90,7 @@ class King(Piece):
     def move(self, pos, pieces, w, h):
         if self.hit_team(pos, pieces):
             return
-        dif_x, dif_y = abs(pos[0] - self.x) // w, abs(pos[1] - self.y) // h
+        dif_x, dif_y = self.get_dif_pos(pos, w, h)
         if dif_x <= 1 and dif_y <= 1:
             self.update_pos(pos, pieces)
 
@@ -98,7 +101,7 @@ class Queen(Piece):
     def move(self, pos, pieces, w, h):
         if self.hit_team(pos, pieces):
             return
-        dif_x, dif_y = abs(pos[0] - self.x) // w, abs(pos[1] - self.y) // h
+        dif_x, dif_y = self.get_dif_pos(pos, w, h)
         if dif_x == dif_y or dif_x != 0 and dif_y == 0 or dif_x == 0 and dif_y != 0:
             self.update_pos(pos, pieces)
 
@@ -109,7 +112,7 @@ class Bishop(Piece):
     def move(self, pos, pieces, w, h):
         if self.hit_team(pos, pieces):
             return
-        dif_x, dif_y = abs(pos[0] - self.x) // w, abs(pos[1] - self.y) // h
+        dif_x, dif_y = self.get_dif_pos(pos, w, h)
         if dif_x == dif_y:
             self.update_pos(pos, pieces)
 
