@@ -132,10 +132,11 @@ def main():
     w, h = get_width_height()
     board = square_pos()
     pieces = [
-      King(board[4][0],w,h,"B"), Queen(board[3][0],w,h,"B"), Bishop(board[2][0],w,h,"B"),Bishop(board[5][0],w,h,"B")
-    , Knight(board[1][0], w, h, "B"), Knight(board[6][0], w, h, "B")
-    , King(board[4][7],w,h,"W"), Queen(board[3][7],w,h,"W"), Bishop(board[2][7],w,h,"W"),Bishop(board[5][7],w,h,"W")
-    , Knight(board[1][7], w, h, "W"), Knight(board[6][7], w, h, "W")]
+    King(board[4][0],w,h,"B"), Queen(board[3][0],w,h,"B"), Bishop(board[2][0],w,h,"B"),Bishop(board[5][0],w,h,"B"),
+    Knight(board[1][0], w, h, "B"), Knight(board[6][0], w, h, "B"),
+    King(board[4][7],w,h,"W"), Queen(board[3][7],w,h,"W"), Bishop(board[2][7],w,h,"W"),Bishop(board[5][7],w,h,"W"),
+    Knight(board[1][7], w, h, "W"), Knight(board[6][7], w, h, "W")
+    ]
     selection = None
     while playing:
         for event in pygame.event.get():
