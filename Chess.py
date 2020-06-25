@@ -27,6 +27,11 @@ def square_cords():
             board[col].append({"x":col * w, "y":row * h})
     return board
 
+def draw_mouse(win):
+    w, h = get_width_height()
+    rect = ((pygame.mouse.get_pos()[0] // w) * w, (pygame.mouse.get_pos()[1] // h) * h, w, h)
+    pygame.draw.rect(win, (255,0,0), rect, 5)
+
 class Piece:
     def __init__(self, cords, width, height, piece):
         self.x = cords["x"]
@@ -61,6 +66,7 @@ def main():
         for piece in pieces:
             if piece.Alive:
                 piece.draw(win)
+        draw_mouse(win)
         pygame.display.flip()
 
 if __name__ == "__main__":
