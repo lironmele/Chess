@@ -86,7 +86,7 @@ def main():
     playing = True
     w, h = get_width_height()
     board = square_cords()
-    pieces = [King(board[0][0],w,h,"B"), King(board[1][0],w,h,"W")]
+    pieces = [King(board[4][0],w,h,"B"), King(board[4][7],w,h,"W")]
     selection = None
     while playing:
         for event in pygame.event.get():
