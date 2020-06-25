@@ -6,9 +6,8 @@ win = pygame.display.set_mode((500, 500))
 def get_width_height():
     return pygame.display.Info().current_w / 8, pygame.display.Info().current_h / 8
 
-def draw_borders(win):
+def draw_borders(win, w, h):
     light = True
-    w, h = get_width_height()
     for y in range(8):
         for x in range(8):
             if (light):
@@ -27,10 +26,18 @@ def square_cords():
             board[col].append({"x":col * w, "y":row * h})
     return board
 
-def draw_mouse(win):
-    w, h = get_width_height()
+def draw_mouse(win, w, h):
     rect = ((pygame.mouse.get_pos()[0] // w) * w, (pygame.mouse.get_pos()[1] // h) * h, w, h)
     pygame.draw.rect(win, (255,0,0), rect, 5)
+
+def mouse_selection(win, selection, pieces):
+    w, h = get_width_height()
+    if selection is None:
+        return (pygame.mouse.get_pos()[0] // w) * w, (pygame.mouse.get_pos()[1] // h) * h
+
+def draw_selection(win, selection, w, h):
+    if selection is not None:
+        pygame.draw.rect(win, (0,255,0), ((selection[0] // w) * w, (selection[1] // h) * h, w, h), 5)
 
 class Piece:
     def __init__(self, cords, width, height, piece):
@@ -40,14 +47,14 @@ class Piece:
         self.height = height
         self.rect = (self.x, self.y, width, height)
         self.image = pygame.image.load(f"C:/Code/Python/Chess/Pieces/{piece}.png")
-        self.Alive = True
+        self.alive = True
 
     def draw(self, win):
         win.blit(self.image, self.rect)
     
     def check_hit(self, pieces):
         for piece in pieces:
-            if self != piece and piece.Alive and self.x == piece.x and self.y == piece.y:
+            if self is not piece and piece.Alive and self.x == piece.x and self.y == piece.y:
                 piece.Alive = False
                 return
 
@@ -56,17 +63,22 @@ def main():
     w, h = get_width_height()
     board = square_cords()
     pieces = [Piece(board[0][0],w,h,"Rook_B"), Piece(board[1][0],w,h,"Knight_B")]
+    selection = None
     while playing:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 playing = False
+            if event.type == pygame.MOUSEBUTTONUP:
+                selection = mouse_selection(win, selection, pieces)
+        w, h = get_width_height()
         board = square_cords()
         win.fill((255, 255, 255))
-        draw_borders(win)
+        draw_borders(win, w, h)
         for piece in pieces:
-            if piece.Alive:
+            if piece.alive:
                 piece.draw(win)
-        draw_mouse(win)
+        draw_mouse(win, w, h)
+        draw_selection(win, selection, w, h)
         pygame.display.flip()
 
 if __name__ == "__main__":
