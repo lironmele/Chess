@@ -24,7 +24,6 @@ def square_cords():
             board[col].append({"x":col * w, "y":row * h})
     return board
 
-
 class Piece:
     def __init__(self, cords, width, height, piece):
         self.x = cords["x"]
@@ -34,8 +33,15 @@ class Piece:
         self.rect = (self.x, self.y, width, height)
         self.image = pygame.image.load(f"C:/Code/Python/Chess/Pieces/{piece}.png")
         self.Alive = True
+
     def draw(self, win):
         win.blit(self.image, self.rect)
+    
+    def check_hit(self, pieces):
+        for piece in pieces:
+            if self != piece and piece.Alive and self.x == piece.x and self.y == piece.y:
+                piece.Alive = False
+                return
 
 def main():
     playing = True
@@ -46,11 +52,12 @@ def main():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 playing = False
-        baord = square_cords()
+        board = square_cords()
         win.fill((255, 255, 255))
         draw_borders(win)
         for piece in pieces:
-            piece.draw(win)
+            if piece.Alive:
+                piece.draw(win)
         pygame.display.flip()
 
 if __name__ == "__main__":
