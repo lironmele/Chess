@@ -48,7 +48,7 @@ def draw_selection(win, selection, w, h):
         pygame.draw.rect(win, (0,255,0), ((selection.x // w) * w, (selection.y // h) * h, w, h), 5)
 
 class Piece:
-    def __init__(self, pos, width, height, piece):
+    def __init__(self, pos, width, height, piece, team):
         self.x = pos["x"]
         self.y = pos["y"]
         self.width = width
@@ -56,7 +56,7 @@ class Piece:
         self.rect = (self.x, self.y, width, height)
         self.image = pygame.image.load(f"C:/Code/Python/Chess/Pieces/{piece}.png")
         self.alive = True
-        self.team = ""
+        self.team = team
 
     def draw(self, win):
         win.blit(self.image, self.rect)
@@ -82,8 +82,7 @@ class Piece:
 
 class King(Piece):
     def __init__(self, pos, width, height, team):
-        super().__init__(pos, width, height, "King_" + team)
-        self.team = team
+        super().__init__(pos, width, height, "King_" + team, team)
     
     def move(self, pos, pieces, w, h):
         if self.hit_team(pos, pieces):
@@ -94,8 +93,7 @@ class King(Piece):
 
 class Queen(Piece):
     def __init__(self, pos, width, height, team):
-        super().__init__(pos, width, height, "Queen_" + team)
-        self.team = team
+        super().__init__(pos, width, height, "Queen_" + team, team)
 
     def move(self, pos, pieces, w, h):
         if self.hit_team(pos, pieces):
@@ -104,11 +102,23 @@ class Queen(Piece):
         if dif_x == dif_y or dif_x != 0 and dif_y == 0 or dif_x == 0 and dif_y != 0:
             self.update_pos(pos, pieces)
 
+class Bishop(Piece):
+    def __init__(self, pos, width, height, team):
+        super().__init__(pos, width, height, "Bishop_" + team, team)
+
+    def move(self, pos, pieces, w, h):
+        if self.hit_team(pos, pieces):
+            return
+        dif_x, dif_y = abs(pos[0] - self.x) // w, abs(pos[1] - self.y) // h
+        if dif_x == dif_y:
+            self.update_pos(pos, pieces)
+
 def main():
     playing = True
     w, h = get_width_height()
     board = square_pos()
-    pieces = [King(board[4][0],w,h,"B"), King(board[4][7],w,h,"W"), Queen(board[3][0],w,h,"B"), Queen(board[3][7],w,h,"W")]
+    pieces = [King(board[4][0],w,h,"B"), Queen(board[3][0],w,h,"B"), Bishop(board[2][0],w,h,"B"),Bishop(board[5][0],w,h,"B")
+            , King(board[4][7],w,h,"W"), Queen(board[3][7],w,h,"W"), Bishop(board[2][7],w,h,"W"),Bishop(board[5][7],w,h,"W")]
     selection = None
     while playing:
         for event in pygame.event.get():
