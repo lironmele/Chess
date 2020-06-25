@@ -37,6 +37,7 @@ def mouse_selection(win, selection, pieces):
         if selection.x == mouse_pos[0] and selection.y == mouse_pos[1]:
             return None
         else:
+            pass
             #selection.move(mouse_pos, pieces)
     else:
         for piece in pieces:
