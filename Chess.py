@@ -34,6 +34,9 @@ def mouse_selection(win, selection, pieces):
     w, h = get_width_height()
     if selection is None:
         return (pygame.mouse.get_pos()[0] // w) * w, (pygame.mouse.get_pos()[1] // h) * h
+    elif selection == ((pygame.mouse.get_pos()[0] // w) * w, (pygame.mouse.get_pos()[1] // h) * h):
+        return None
+    
 
 def draw_selection(win, selection, w, h):
     if selection is not None:
