@@ -3,9 +3,12 @@ pygame.init()
 
 win = pygame.display.set_mode((500, 500))
 
+def get_width_height():
+    return pygame.display.Info().current_w / 8, pygame.display.Info().current_h / 8
+
 def draw_borders(win):
     light = True
-    w, h = pygame.display.Info().current_w / 8, pygame.display.Info().current_h / 8
+    w, h = get_width_height()
     for y in range(8):
         for x in range(8):
             if (light):
@@ -18,7 +21,7 @@ def draw_borders(win):
 
 def square_cords():
     board = [[],[],[],[],[],[],[],[]]
-    w, h = pygame.display.Info().current_w / 8, pygame.display.Info().current_h / 8
+    w, h = get_width_height()
     for col in range(8):
         for row in range(8):
             board[col].append({"x":col * w, "y":row * h})
@@ -45,7 +48,7 @@ class Piece:
 
 def main():
     playing = True
-    w, h = pygame.display.Info().current_w / 8, pygame.display.Info().current_h / 8
+    w, h = get_width_height()
     board = square_cords()
     pieces = [Piece(board[0][0],w,h,"Rook_B"), Piece(board[1][0],w,h,"Knight_B")]
     while playing:
