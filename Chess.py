@@ -19,19 +19,19 @@ def draw_borders(win):
 def square_cords():
     board = [[],[],[],[],[],[],[],[]]
     w, h = pygame.display.Info().current_w / 8, pygame.display.Info().current_h / 8
-    for y in range(8):
-        for x in range(8):
-            board[y].append({"x":x * w, "y":y * h})
+    for col in range(8):
+        for row in range(8):
+            board[col].append({"x":col * w, "y":row * h})
     return board
 
 
 class Piece:
-    def __init__(self, x, y, width, height, piece):
-        self.x = x
-        self.y = y
+    def __init__(self, cords, width, height, piece):
+        self.x = cords["x"]
+        self.y = cords["y"]
         self.width = width
         self.height = height
-        self.rect = (x, y, width, height)
+        self.rect = (self.x, self.y, width, height)
         self.image = pygame.image.load(f"C:/Code/Python/Chess/Pieces/{piece}.png")
         self.Alive = True
     def draw(self, win):
@@ -40,15 +40,17 @@ class Piece:
 def main():
     playing = True
     w, h = pygame.display.Info().current_w / 8, pygame.display.Info().current_h / 8
-    board = GetCords()
-
+    board = square_cords()
+    pieces = [Piece(board[0][0],w,h,"Rook_B"), Piece(board[1][0],w,h,"Knight_B")]
     while playing:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 playing = False
-        baord = GetCords()
+        baord = square_cords()
         win.fill((255, 255, 255))
         draw_borders(win)
+        for piece in pieces:
+            piece.draw(win)
         pygame.display.flip()
 
 if __name__ == "__main__":
