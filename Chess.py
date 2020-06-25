@@ -116,12 +116,26 @@ class Bishop(Piece):
         if dif_x == dif_y:
             self.update_pos(pos, pieces)
 
+class Knight(Piece):
+    def __init__(self, pos, width, height, team):
+        super().__init__(pos, width, height, "Knight_" + team, team)
+    
+    def move(self, pos, pieces, w, h):
+        if self.hit_team(pos, pieces):
+            return
+        dif_x, dif_y = self.get_dif_pos(pos, w, h)
+        if dif_x == 2 and dif_y == 1 or dif_x == 1 and dif_y == 2:
+            self.update_pos(pos, pieces)
+
 def main():
     playing = True
     w, h = get_width_height()
     board = square_pos()
-    pieces = [King(board[4][0],w,h,"B"), Queen(board[3][0],w,h,"B"), Bishop(board[2][0],w,h,"B"),Bishop(board[5][0],w,h,"B")
-            , King(board[4][7],w,h,"W"), Queen(board[3][7],w,h,"W"), Bishop(board[2][7],w,h,"W"),Bishop(board[5][7],w,h,"W")]
+    pieces = [
+      King(board[4][0],w,h,"B"), Queen(board[3][0],w,h,"B"), Bishop(board[2][0],w,h,"B"),Bishop(board[5][0],w,h,"B")
+    , Knight(board[1][0], w, h, "B"), Knight(board[6][0], w, h, "B")
+    , King(board[4][7],w,h,"W"), Queen(board[3][7],w,h,"W"), Bishop(board[2][7],w,h,"W"),Bishop(board[5][7],w,h,"W")
+    , Knight(board[1][7], w, h, "W"), Knight(board[6][7], w, h, "W")]
     selection = None
     while playing:
         for event in pygame.event.get():
