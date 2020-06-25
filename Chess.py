@@ -4,11 +4,26 @@ pygame.init()
 win = pygame.display.set_mode((500, 500))
 
 def draw_borders(win):
+    light = True
     w, h = pygame.display.Info().current_w / 8, pygame.display.Info().current_h / 8
     for y in range(8):
         for x in range(8):
-            if ((x % 2 == 0 and y % 2 == 1) or (x % 2 == 1 and y % 2 == 0)):
-                pygame.draw.rect(win, (0,0,0), (w * x, h * y, w, h))
+            if (light):
+                pygame.draw.rect(win, (229,246,206), (w * x, h * y, w, h))
+                light = False
+            else:
+                pygame.draw.rect(win, (177,200,103), (w * x, h * y, w, h))
+                light = True
+        light = not light
+
+def square_cords():
+    board = [[],[],[],[],[],[],[],[]]
+    w, h = pygame.display.Info().current_w / 8, pygame.display.Info().current_h / 8
+    for y in range(8):
+        for x in range(8):
+            board[y].append({"x":x * w, "y":y * h})
+    return board
+
 
 class Piece:
     def __init__(self, x, y, width, height, piece):
@@ -22,14 +37,16 @@ class Piece:
     def draw(self, win):
         win.blit(self.image, self.rect)
 
-
 def main():
     playing = True
+    w, h = pygame.display.Info().current_w / 8, pygame.display.Info().current_h / 8
+    board = GetCords()
+
     while playing:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 playing = False
-
+        baord = GetCords()
         win.fill((255, 255, 255))
         draw_borders(win)
         pygame.display.flip()
