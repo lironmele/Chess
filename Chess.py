@@ -32,15 +32,20 @@ def draw_mouse(win, w, h):
 
 def mouse_selection(win, selection, pieces):
     w, h = get_width_height()
-    if selection is None:
-        return (pygame.mouse.get_pos()[0] // w) * w, (pygame.mouse.get_pos()[1] // h) * h
-    elif selection == ((pygame.mouse.get_pos()[0] // w) * w, (pygame.mouse.get_pos()[1] // h) * h):
-        return None
-    
+    mouse_pos = (pygame.mouse.get_pos()[0] // w) * w, (pygame.mouse.get_pos()[1] // h) * h
+    if selection is not None:
+        if selection.x == mouse_pos[0] and selection.y == mouse_pos[1]:
+            return None
+        else:
+            #selection.move(mouse_pos, pieces)
+    else:
+        for piece in pieces:
+            if (piece.x, piece.y) == mouse_pos:
+                return piece
 
 def draw_selection(win, selection, w, h):
     if selection is not None:
-        pygame.draw.rect(win, (0,255,0), ((selection[0] // w) * w, (selection[1] // h) * h, w, h), 5)
+        pygame.draw.rect(win, (0,255,0), ((selection.x // w) * w, (selection.y // h) * h, w, h), 5)
 
 class Piece:
     def __init__(self, cords, width, height, piece):
@@ -57,8 +62,8 @@ class Piece:
     
     def check_hit(self, pieces):
         for piece in pieces:
-            if self is not piece and piece.Alive and self.x == piece.x and self.y == piece.y:
-                piece.Alive = False
+            if self is not piece and piece.alive and self.x == piece.x and self.y == piece.y:
+                piece.alive = False
                 return
 
 def main():
