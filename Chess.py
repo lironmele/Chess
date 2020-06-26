@@ -223,7 +223,9 @@ class Rook(Piece):
         if self.hit_team(pos, pieces):
             return
         dif_x, dif_y = self.get_dif_pos(pos, w, h)
-        if dif_x == 0 and dif_y != 0 or dif_x != 0 and dif_y == 0:
+        if dif_x == 0 and dif_y != 0 and self.is_way_free_y(pos, pieces, h):
+            self.update_pos(pos, pieces)
+        elif dif_x != 0 and dif_y == 0 and self.is_way_free_x(pos, pieces, w):
             self.update_pos(pos, pieces)
 
 class Pawn(Piece):
