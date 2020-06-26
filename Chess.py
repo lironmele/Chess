@@ -99,6 +99,65 @@ class Piece:
         self.rect = (self.x, self.y, self.width, self.height)
         self.register_hit(pieces)
 
+    def is_way_free_x(self, pos, pieces, w):
+        if pos[0] - self.x > 0:
+            pos[0] -= w
+        elif pos[0] - self.x < 0:
+            pos[0] += w
+        if abs(pos[0] - self.x) == 0:
+            return True
+        for piece in pieces:
+            if self is piece:
+                continue
+            elif pos[0] == piece.x and pos[1] == piece.y:
+                return False
+        return self.is_way_free_x(pos, pieces, w)
+
+    def is_way_free_y(self, pos, pieces, h):
+        if pos[1] - self.y > 0:
+            pos[1] -= h
+        elif pos[1] - self.y < 0:
+            pos[1] += h
+        if abs(pos[1] - self.y) == 0:
+            return True
+        for piece in pieces:
+            if self is piece:
+                continue
+            elif pos[0] == piece.x and pos[1] == piece.y:
+                return False
+        return self.is_way_free_y(pos, pieces, h)
+
+    def is_way_free_diagonal_main(self, pos, pieces, w, h):
+        if pos[0] - self.x > 0:
+            pos[0] -= w
+            pos[1] -= h
+        elif pos[0] - self.x < 0:
+            pos[0] += w
+            pos[1] += h
+        if abs(pos[1] - self.y) == 0:
+            return True
+        for piece in pieces:
+            if self is piece:
+                continue
+            elif pos[0] == piece.x and pos[1] == piece.y:
+                return False
+        return self.is_way_free_diagonal_main(pos, pieces, w, h)
+
+    def is_way_free_diagonal_secondary(self, pos, pieces, w, h):
+        if pos[0] - self.x > 0:
+            pos[0] -= w
+            pos[1] += h
+        elif pos[0] - self.x < 0:
+            pos[0] += w
+            pos[1] -= h
+        if abs(pos[1] - self.y) == 0:
+            return True
+        for piece in pieces:
+            if self is piece:
+                continue
+            elif pos[0] == piece.x and pos[1] == piece.y:
+                return False
+        return self.is_way_free_diagonal_secondary(pos, pieces, w, h)
 
 class King(Piece):
     def __init__(self, pos, width, height, team):
