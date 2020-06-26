@@ -90,6 +90,8 @@ class Piece:
     def register_hit(self, pieces):
         for piece in pieces:
             if self is not piece and piece.alive and self.team != piece.team and self.x == piece.x and self.y == piece.y:
+                if isinstance(piece, King):
+                    game_over(piece.team)
                 pieces.remove(piece)
                 return
 
@@ -277,6 +279,26 @@ class Pawn(Piece):
         self.x = pos[0]
         self.y = pos[1]
         self.rect = (self.x, self.y, self.width, self.height)
+
+def game_over(team):
+    if team == "B":
+        team = "White"
+    elif team == "W":
+        team = "Black"
+    overfont = pygame.font.SysFont('agencyfb', 75)
+    overtext = overfont.render("Game Over!", True, (0,0,0))
+    w, h = get_width_height()
+    win.blit(overtext, (100, 100))
+    pygame.display.flip()
+    pygame.time.delay(1000)
+    winteamfont = pygame.font.SysFont('agencyfb', 75)
+    winteamtext = winteamfont.render('{} team wins!'.format(team), True, (0,0,0))
+    win.blit(overtext, (100, 100))
+    win.blit(winteamtext, (50, 200))
+    pygame.display.flip()
+    pygame.time.delay(2500)
+    pygame.quit()
+    exit()
 
 def main():
     playing = True
