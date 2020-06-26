@@ -100,6 +100,7 @@ class Piece:
         self.register_hit(pieces)
 
     def is_way_free_x(self, pos, pieces, w):
+        pos = list(pos)
         if pos[0] - self.x > 0:
             pos[0] -= w
         elif pos[0] - self.x < 0:
@@ -114,6 +115,7 @@ class Piece:
         return self.is_way_free_x(pos, pieces, w)
 
     def is_way_free_y(self, pos, pieces, h):
+        pos = list(pos)
         if pos[1] - self.y > 0:
             pos[1] -= h
         elif pos[1] - self.y < 0:
@@ -128,6 +130,7 @@ class Piece:
         return self.is_way_free_y(pos, pieces, h)
 
     def is_way_free_diagonal_main(self, pos, pieces, w, h):
+        pos = list(pos)
         if pos[0] - self.x > 0:
             pos[0] -= w
             pos[1] -= h
@@ -144,6 +147,7 @@ class Piece:
         return self.is_way_free_diagonal_main(pos, pieces, w, h)
 
     def is_way_free_diagonal_secondary(self, pos, pieces, w, h):
+        pos = list(pos)
         if pos[0] - self.x > 0:
             pos[0] -= w
             pos[1] += h
@@ -178,13 +182,13 @@ class Queen(Piece):
         if self.hit_team(pos, pieces):
             return
         dif_x, dif_y = self.get_dif_pos(pos, w, h)
-        if (pos[0] - self.x) == (pos[1] - self.y) and self.is_way_free_diagonal_main(list(pos), pieces, w, h):
+        if (pos[0] - self.x) == (pos[1] - self.y) and self.is_way_free_diagonal_main(pos, pieces, w, h):
             self.update_pos(pos, pieces)
-        elif (pos[0] - self.x) == -(pos[1] - self.y) and self.is_way_free_diagonal_secondary(list(pos), pieces, w, h):
+        elif (pos[0] - self.x) == -(pos[1] - self.y) and self.is_way_free_diagonal_secondary(pos, pieces, w, h):
             self.update_pos(pos, pieces)
-        elif dif_x != 0 and dif_y == 0 and self.is_way_free_x(list(pos), pieces, w):
+        elif dif_x != 0 and dif_y == 0 and self.is_way_free_x(pos, pieces, w):
             self.update_pos(pos, pieces)
-        elif dif_x == 0 and dif_y != 0 and self.is_way_free_y(list(pos), pieces, h):
+        elif dif_x == 0 and dif_y != 0 and self.is_way_free_y(pos, pieces, h):
             self.update_pos(pos, pieces)
 
 class Bishop(Piece):
@@ -195,7 +199,9 @@ class Bishop(Piece):
         if self.hit_team(pos, pieces):
             return
         dif_x, dif_y = self.get_dif_pos(pos, w, h)
-        if dif_x == dif_y:
+        if pos[0] - self.x == pos[1] - self.y and self.is_way_free_diagonal_main(pos, pieces, w, h):
+            self.update_pos(pos, pieces)
+        if pos[0] - self.x == -(pos[1] - self.y) and self.is_way_free_diagonal_secondary(pos, pieces, w, h):
             self.update_pos(pos, pieces)
 
 class Knight(Piece):
