@@ -49,7 +49,7 @@ def draw_selection(win, selection, w, h):
 
 def fill_pieces(board, w, h):
     pieces = [
-    King(board[4][0],w,h,"B"), Queen(board[3][0],w,h,"W"), Bishop(board[2][0],w,h,"B"),Bishop(board[5][0],w,h,"B"),
+    King(board[4][0],w,h,"B"), Queen(board[3][0],w,h,"B"), Bishop(board[2][0],w,h,"B"),Bishop(board[5][0],w,h,"B"),
     Knight(board[1][0], w, h, "B"), Knight(board[6][0], w, h, "B"), Rook(board[0][0], w, h, "B"), Rook(board[7][0], w, h, "B")
     ]
     
@@ -178,7 +178,13 @@ class Queen(Piece):
         if self.hit_team(pos, pieces):
             return
         dif_x, dif_y = self.get_dif_pos(pos, w, h)
-        if dif_x == dif_y or dif_x != 0 and dif_y == 0 or dif_x == 0 and dif_y != 0:
+        if (pos[0] - self.x) == (pos[1] - self.y) and self.is_way_free_diagonal_main(list(pos), pieces, w, h):
+            self.update_pos(pos, pieces)
+        elif (pos[0] - self.x) == -(pos[1] - self.y) and self.is_way_free_diagonal_secondary(list(pos), pieces, w, h):
+            self.update_pos(pos, pieces)
+        elif dif_x != 0 and dif_y == 0 and self.is_way_free_x(list(pos), pieces, w):
+            self.update_pos(pos, pieces)
+        elif dif_x == 0 and dif_y != 0 and self.is_way_free_y(list(pos), pieces, h):
             self.update_pos(pos, pieces)
 
 class Bishop(Piece):
