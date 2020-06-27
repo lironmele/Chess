@@ -1,14 +1,14 @@
 let app = require('express')();
 
-var turn = 'light';
+var turn = 'White';
 var wait = true;
 
 var piece = '';
 var x = '';
 var y = '';
 
-app.get('/light', function (req, res) {
-    if (turn == 'dark') {
+app.get('/White', function (req, res) {
+    if (turn == 'Black') {
         if (wait){
             res.send('still waiting')
             res.status(208);
@@ -25,8 +25,8 @@ app.get('/light', function (req, res) {
     }
 });
 
-app.post('/light', function (req, res) {
-    if (turn == 'light' && wait) {
+app.post('/White', function (req, res) {
+    if (turn == 'White' && wait) {
         wait = false;
         let query = req.query()
         piece = query['piece'];
@@ -36,14 +36,14 @@ app.post('/light', function (req, res) {
     }
 });
 
-app.get('/dark', function (req, res) {
-    if (turn == 'light') {
+app.get('/Black', function (req, res) {
+    if (turn == 'White') {
         if (wait){
             res.send('still waiting')
             res.status(208);
         }
         else {
-            turn = 'dark';
+            turn = 'Black';
             res.append('piece', peice);
             res.append('x', x);
             res.append('y', y);
@@ -55,8 +55,8 @@ app.get('/dark', function (req, res) {
     }
 });
 
-app.post('/dark', function (req, res) {
-    if (turn == 'dark' && wait) {
+app.post('/Black', function (req, res) {
+    if (turn == 'Black' && wait) {
         wait = false;
         let query = req.query()
         piece = query['piece'];
