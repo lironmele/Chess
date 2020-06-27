@@ -1,7 +1,14 @@
 import pygame, numpy
 pygame.init()
 
+#detect automatically in the future
+side = input("Which side are you?")
 win = pygame.display.set_mode((500, 500))
+
+if side == "White":
+    turn = True
+elif side == "Black":
+    turn = False
 
 def get_width_height():
     return pygame.display.Info().current_w / 8, pygame.display.Info().current_h / 8
@@ -312,6 +319,8 @@ def main():
                 playing = False
             if event.type == pygame.MOUSEBUTTONUP:
                 selection = mouse_selection(win, selection, pieces)
+                if selection is not None and selection.team != side[0]:
+                    selection = None
         w, h = get_width_height()
         board = square_pos()
         win.fill((255, 255, 255))
