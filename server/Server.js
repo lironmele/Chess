@@ -3,8 +3,10 @@ let app = require('express')();
 var turn = 'White';
 var wait = true;
 
-var x = '';
-var y = '';
+var old_x = '';
+var old_y = '';
+var new_x = '';
+var new_y = '';
 
 app.get('/White', function (req, res) {
     if (turn == 'Black') {
@@ -15,8 +17,10 @@ app.get('/White', function (req, res) {
         else {
             turn = 'White';
             wait = true;
-            res.append('x', x);
-            res.append('y', y);
+            res.append('old_x', old_x);
+            res.append('old_y', old_y);
+            res.append('new_x', new_x);
+            res.append('new_y', new_y);
             res.status(200);
             r.send('turn ended');
         }
@@ -31,8 +35,10 @@ app.post('/White', function (req, res) {
     if (turn == 'White' && wait) {
         wait = false;
         let query = req.query()
-        x = query['x'];
-        y = query['y'];
+        old_x = query['old_x'];
+        old_y = query['old_y'];
+        new_x = query['new_x'];
+        new_y = query['new_y'];
         res.status(200);
         res.send('sent successfully');
     }
@@ -47,8 +53,10 @@ app.get('/Black', function (req, res) {
         else {
             turn = 'Black';
             wait = true;
-            res.append('x', x);
-            res.append('y', y);
+            res.append('old_x', old_x);
+            res.append('old_y', old_y);
+            res.append('new_x', new_x);
+            res.append('new_y', new_y);
             res.status(200);
             r.send('turn ended');
         }
@@ -63,8 +71,10 @@ app.post('/Black', function (req, res) {
     if (turn == 'Black' && wait) {
         wait = false;
         let query = req.query()
-        x = query['x'];
-        y = query['y'];
+        old_x = query['old_x'];
+        old_y = query['old_y'];
+        new_x = query['new_x'];
+        new_y = query['new_y'];
         res.status(200);
         res.send('sent successfully');
     }
