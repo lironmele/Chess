@@ -34,11 +34,10 @@ app.get('/White', function (req, res) {
 app.post('/White', function (req, res) {
     if (turn == 'White' && wait) {
         wait = false;
-        let query = req.query()
-        old_x = query['old_x'];
-        old_y = query['old_y'];
-        new_x = query['new_x'];
-        new_y = query['new_y'];
+        old_x = req.query['old_x'];
+        old_y = req.query['old_y'];
+        new_x = req.query['new_x'];
+        new_y = req.query['new_y'];
         res.status(200);
         res.send('sent successfully');
     }
@@ -70,11 +69,10 @@ app.get('/Black', function (req, res) {
 app.post('/Black', function (req, res) {
     if (turn == 'Black' && wait) {
         wait = false;
-        let query = req.query()
-        old_x = query['old_x'];
-        old_y = query['old_y'];
-        new_x = query['new_x'];
-        new_y = query['new_y'];
+        old_x = req.query['old_x'];
+        old_y = req.query['old_y'];
+        new_x = req.query['new_x'];
+        new_y = req.query['new_y'];
         res.status(200);
         res.send('sent successfully');
     }
