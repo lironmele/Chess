@@ -3,7 +3,6 @@ let app = require('express')();
 var turn = 'White';
 var wait = true;
 
-var piece = '';
 var x = '';
 var y = '';
 
@@ -16,7 +15,6 @@ app.get('/White', function (req, res) {
         else {
             turn = 'White';
             wait = true;
-            res.append('piece', piece);
             res.append('x', x);
             res.append('y', y);
             res.status(200);
@@ -33,7 +31,6 @@ app.post('/White', function (req, res) {
     if (turn == 'White' && wait) {
         wait = false;
         let query = req.query()
-        piece = query['piece'];
         x = query['x'];
         y = query['y'];
         res.status(200);
@@ -50,7 +47,6 @@ app.get('/Black', function (req, res) {
         else {
             turn = 'Black';
             wait = true;
-            res.append('piece', piece);
             res.append('x', x);
             res.append('y', y);
             res.status(200);
@@ -67,7 +63,6 @@ app.post('/Black', function (req, res) {
     if (turn == 'Black' && wait) {
         wait = false;
         let query = req.query()
-        piece = query['piece'];
         x = query['x'];
         y = query['y'];
         res.status(200);
