@@ -10,18 +10,22 @@ var y = '';
 app.get('/White', function (req, res) {
     if (turn == 'Black') {
         if (wait){
-            res.send('still waiting')
             res.status(208);
+            res.send('still waiting')
         }
         else {
-            res.append('piece', peice);
+            turn = 'White';
+            wait = true;
+            res.append('piece', piece);
             res.append('x', x);
             res.append('y', y);
             res.status(200);
+            r.send('turn ended');
         }
     }
     else {
         res.status(203);
+        res.send("it's your turn");
     }
 });
 
@@ -33,25 +37,29 @@ app.post('/White', function (req, res) {
         x = query['x'];
         y = query['y'];
         res.status(200);
+        res.send('sent successfully');
     }
 });
 
 app.get('/Black', function (req, res) {
     if (turn == 'White') {
         if (wait){
-            res.send('still waiting')
             res.status(208);
+            res.send('still waiting')
         }
         else {
             turn = 'Black';
-            res.append('piece', peice);
+            wait = true;
+            res.append('piece', piece);
             res.append('x', x);
             res.append('y', y);
             res.status(200);
+            r.send('turn ended');
         }
     }
     else {
         res.status(203);
+        res.send("it's your turn");
     }
 });
 
@@ -63,6 +71,7 @@ app.post('/Black', function (req, res) {
         x = query['x'];
         y = query['y'];
         res.status(200);
+        res.send('sent successfully');
     }
 });
 
