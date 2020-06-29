@@ -1,11 +1,13 @@
-import pygame, requests, numpy
+import pygame, requests, numpy, os
 pygame.init()
+
+server_ip = "localhost"
 
 #detect automatically in the future
 side = input("What side are you?\n")
+requests.get(f"http://{server_ip}:3000/")
 win = pygame.display.set_mode((500, 500))
 
-global turn
 if side == "White":
     turn = True
 elif side == "Black":
@@ -40,15 +42,15 @@ def draw_mouse(win, w, h):
 
 def mouse_selection(win, selection, pieces, mouse_pos=None):
     w, h = get_width_height()
-    print(mouse_pos)
     if mouse_pos is None:
         mouse_pos = (pygame.mouse.get_pos()[0] // w) * w, (pygame.mouse.get_pos()[1] // h) * h
     if selection is not None:
         if selection.x == mouse_pos[0] and selection.y == mouse_pos[1]:
             return None
         else:
-            send_turn([selection.x, selection.y], mouse_pos)
-            selection.move(mouse_pos, pieces, w, h)
+            old_pos = [selection.x, selection.y]
+            if selection.move(mouse_pos, pieces, w, h) is True and turn:
+                send_turn(old_pos, [selection.x, selection.y])
     else:
         for piece in pieces:
             if (piece.x, piece.y) == mouse_pos or [piece.x, piece.y] == mouse_pos:
@@ -82,7 +84,7 @@ class Piece:
         self.width = width
         self.height = height
         self.rect = (self.x, self.y, width, height)
-        self.image = pygame.image.load(f"C:/Code/Python/Chess/Pieces/{piece}.png")
+        self.image = pygame.image.load(f"{os.curdir}/Pieces/{piece}.png")
         self.alive = True
         self.team = team
 
@@ -104,7 +106,7 @@ class Piece:
                 if isinstance(piece, King):
                     game_over(piece.team)
                 pieces.remove(piece)
-                return
+                
 
     def update_pos(self, pos, pieces):
         self.x = pos[0]
@@ -186,6 +188,7 @@ class King(Piece):
         dif_x, dif_y = self.get_dif_pos(pos, w, h)
         if dif_x <= 1 and dif_y <= 1:
             self.update_pos(pos, pieces)
+            return True
 
 class Queen(Piece):
     def __init__(self, pos, width, height, team):
@@ -197,12 +200,16 @@ class Queen(Piece):
         dif_x, dif_y = self.get_dif_pos(pos, w, h)
         if (pos[0] - self.x) == (pos[1] - self.y) and self.is_way_free_diagonal_main(pos, pieces, w, h):
             self.update_pos(pos, pieces)
+            return True
         elif (pos[0] - self.x) == -(pos[1] - self.y) and self.is_way_free_diagonal_secondary(pos, pieces, w, h):
             self.update_pos(pos, pieces)
+            return True
         elif dif_x != 0 and dif_y == 0 and self.is_way_free_x(pos, pieces, w):
             self.update_pos(pos, pieces)
+            return True
         elif dif_x == 0 and dif_y != 0 and self.is_way_free_y(pos, pieces, h):
             self.update_pos(pos, pieces)
+            return True
 
 class Bishop(Piece):
     def __init__(self, pos, width, height, team):
@@ -214,8 +221,10 @@ class Bishop(Piece):
         dif_x, dif_y = self.get_dif_pos(pos, w, h)
         if pos[0] - self.x == pos[1] - self.y and self.is_way_free_diagonal_main(pos, pieces, w, h):
             self.update_pos(pos, pieces)
+            return True
         if pos[0] - self.x == -(pos[1] - self.y) and self.is_way_free_diagonal_secondary(pos, pieces, w, h):
             self.update_pos(pos, pieces)
+            return True
 
 class Knight(Piece):
     def __init__(self, pos, width, height, team):
@@ -227,6 +236,7 @@ class Knight(Piece):
         dif_x, dif_y = self.get_dif_pos(pos, w, h)
         if dif_x == 2 and dif_y == 1 or dif_x == 1 and dif_y == 2:
             self.update_pos(pos, pieces)
+            return True
 
 class Rook(Piece):
     def __init__(self, pos, width, height, team):
@@ -238,8 +248,10 @@ class Rook(Piece):
         dif_x, dif_y = self.get_dif_pos(pos, w, h)
         if dif_x == 0 and dif_y != 0 and self.is_way_free_y(pos, pieces, h):
             self.update_pos(pos, pieces)
+            return True
         elif dif_x != 0 and dif_y == 0 and self.is_way_free_x(pos, pieces, w):
             self.update_pos(pos, pieces)
+            return True
 
 class Pawn(Piece):
     def __init__(self, pos, width, height, team):
@@ -255,12 +267,15 @@ class Pawn(Piece):
         if dif_x == 0 and dif_y == 1 and not self.is_way_blocked(pos, pieces, h):
             self.update_pos(pos)
             self.first_turn = False
+            return True
         elif self.first_turn and dif_x == 0 and dif_y == 2 and not self.is_way_blocked(pos, pieces, h):
             self.update_pos(pos)
             self.first_turn = False
+            return True
         elif dif_x == 1 and dif_y == 1 and self.is_eating(pos, pieces):
             super().update_pos(pos, pieces)
             self.first_turn = False
+            return True
 
     def is_eating(self, pos, pieces):
         for piece in pieces:
@@ -308,19 +323,17 @@ def game_over(team):
     win.blit(winteamtext, (50, 200))
     pygame.display.flip()
     pygame.time.delay(2500)
-    pygame.quit()
-    exit()
 
 def wait_turn():
-    r = requests.get(f"http://localhost:3000/{side}")
+    r = requests.get(f"http://{server_ip}:3000/{side}")
     if r.status_code == 200:
         headers = r.headers
         return [float(headers['old_x']), float(headers['old_y']), float(headers['new_x']), float(headers['new_y'])]
-    elif r.status_code == 208:
+    else:
         return "Try Again"
 
 def send_turn(old_pos, new_pos):
-    r = requests.post(f"http://localhost:3000/{side}", headers={"old_x":str(old_pos[0]), "old_y":str(old_pos[1])
+    r = requests.post(f"http://{server_ip}:3000/{side}", headers={"old_x":str(old_pos[0]), "old_y":str(old_pos[1])
     , "new_x":str(new_pos[0]), "new_y":str(new_pos[1])})
     global turn
     turn = False
