@@ -1,10 +1,11 @@
-import pygame, numpy
+import pygame, requests, numpy
 pygame.init()
 
 #detect automatically in the future
-side = input("Which side are you?")
+side = input("What side are you?\n")
 win = pygame.display.set_mode((500, 500))
 
+global turn
 if side == "White":
     turn = True
 elif side == "Black":
@@ -37,17 +38,20 @@ def draw_mouse(win, w, h):
     rect = ((pygame.mouse.get_pos()[0] // w) * w, (pygame.mouse.get_pos()[1] // h) * h, w, h)
     pygame.draw.rect(win, (255,0,0), rect, 5)
 
-def mouse_selection(win, selection, pieces):
+def mouse_selection(win, selection, pieces, mouse_pos=None):
     w, h = get_width_height()
-    mouse_pos = (pygame.mouse.get_pos()[0] // w) * w, (pygame.mouse.get_pos()[1] // h) * h
+    print(mouse_pos)
+    if mouse_pos is None:
+        mouse_pos = (pygame.mouse.get_pos()[0] // w) * w, (pygame.mouse.get_pos()[1] // h) * h
     if selection is not None:
         if selection.x == mouse_pos[0] and selection.y == mouse_pos[1]:
             return None
         else:
+            send_turn([selection.x, selection.y], mouse_pos)
             selection.move(mouse_pos, pieces, w, h)
     else:
         for piece in pieces:
-            if (piece.x, piece.y) == mouse_pos:
+            if (piece.x, piece.y) == mouse_pos or [piece.x, piece.y] == mouse_pos:
                 return piece
 
 def draw_selection(win, selection, w, h):
@@ -307,17 +311,32 @@ def game_over(team):
     pygame.quit()
     exit()
 
+def wait_turn():
+    r = requests.get(f"http://localhost:3000/{side}")
+    if r.status_code == 200:
+        headers = r.headers
+        return [float(headers['old_x']), float(headers['old_y']), float(headers['new_x']), float(headers['new_y'])]
+    elif r.status_code == 208:
+        return "Try Again"
+
+def send_turn(old_pos, new_pos):
+    r = requests.post(f"http://localhost:3000/{side}", headers={"old_x":str(old_pos[0]), "old_y":str(old_pos[1])
+    , "new_x":str(new_pos[0]), "new_y":str(new_pos[1])})
+    global turn
+    turn = False
+
 def main():
     playing = True
     w, h = get_width_height()
     board = square_pos()
     pieces = fill_pieces(board, w, h)
     selection = None
+    global turn
     while playing:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 playing = False
-            if event.type == pygame.MOUSEBUTTONUP:
+            if event.type == pygame.MOUSEBUTTONUP and turn:
                 selection = mouse_selection(win, selection, pieces)
                 if selection is not None and selection.team != side[0]:
                     selection = None
@@ -325,6 +344,12 @@ def main():
         board = square_pos()
         win.fill((255, 255, 255))
         draw_borders(win, w, h)
+        if not turn:
+            enemy_move = wait_turn()
+            if enemy_move != "Try Again":
+                selection = mouse_selection(win, selection, pieces, mouse_pos=enemy_move[:2])
+                selection = mouse_selection(win, selection, pieces, mouse_pos=enemy_move[2:])
+                turn = True
         for piece in pieces:
             piece.draw(win)
         draw_mouse(win, w, h)
